@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: black;
+  color: white;
+}
+
+.rounded-full {
+  border: 1px solid white;
+}
+
+.radial-text {
+  background: radial-gradient(circle, white 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 128%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes glow-soft {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes core-pulse {
+  0%, 100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+@keyframes core-wave {
+  0%, 100% {
+    transform: scale(1.05) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  50% {
+    transform: scale(1.05) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+}
+
+@keyframes logo-pulse {
+  0%, 100% {
+    transform: scale(1.1) rotate(0deg);
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+    filter: hue-rotate(30deg) brightness(1.2);
+  }
+}
+
+@keyframes logo-wave {
+  0%, 100% {
+    transform: scale(1.05) rotate(0deg);
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  33% {
+    transform: scale(1.1) rotate(3deg);
+    filter: hue-rotate(15deg) saturate(1.2);
+  }
+  66% {
+    transform: scale(1.05) rotate(-3deg);
+    filter: hue-rotate(-15deg) saturate(1.1);
+  }
+}
+
+.animate-spin-slow {
+  animation: rotate 20s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: rotateReverse 25s linear infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-fast {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-ping-slow {
+  animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-core-pulse {
+  animation: core-pulse 3s ease-in-out infinite;
+}
+
+.animate-core-wave {
+  animation: core-wave 5s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-glow-soft {
+  animation: glow-soft 4s ease-in-out infinite;
+}
+
+.animate-logo-pulse {
+  animation: logo-pulse 3s ease-in-out infinite;
+}
+
+.animate-logo-wave {
+  animation: logo-wave 5s ease-in-out infinite;
+}
