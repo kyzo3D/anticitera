@@ -178,3 +178,30 @@ body {
 .animate-logo-wave {
   animation: logo-wave 5s ease-in-out infinite;
 }
+
+@keyframes fade-in-blur {
+  0% {
+    opacity: 0;
+    filter: blur(72px);
+  }
+  54% {
+    opacity: 0.5;
+    filter: blur(45px);
+  }
+  72% {
+    opacity: 0.7;
+    filter: blur(10px);
+  }
+  90% {
+    opacity: 0.9;
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.animate-fade-in-blur {
+  animation: fade-in-blur 10s ease-out forwards;
+}
