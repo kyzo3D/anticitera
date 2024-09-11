@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   console.time(`elevenlabs request ${requestId}`);
 
   try {
-    const audioStream = await elevenLabs.textToSpeech.convert("gD1IexrzCvsXPHUuT0s3", {
+    const audioStream = await elevenLabs.textToSpeech.convertAsStream("gD1IexrzCvsXPHUuT0s3", {
       optimize_streaming_latency: ElevenLabs.OptimizeStreamingLatency.Zero,
       output_format: ElevenLabs.OutputFormat.Mp344100128,
       text: response,
@@ -90,7 +90,13 @@ export async function POST(request: Request) {
     console.timeEnd(`elevenlabs request ${requestId}`);
     console.time(`stream ${requestId}`);
 
-    return new Response(audioStream, {
+    const chunks = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk);
+    }
+    const audioBuffer = Buffer.concat(chunks);
+
+    return new Response(audioBuffer, {
       headers: {
         "X-Transcript": encodeURIComponent(transcript),
         "X-Response": encodeURIComponent(response),
@@ -101,9 +107,8 @@ export async function POST(request: Request) {
     console.error("ElevenLabs API error:", error);
     return new Response("Voice synthesis failed", { status: 500 });
   }
-}
 
-function location() {
+}function location() {
   const headersList = headers();
 
   const country = headersList.get("x-vercel-ip-country");
