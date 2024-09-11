@@ -19,21 +19,36 @@ export default function Home() {
 	const [isAIResponding, setIsAIResponding] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const player = usePlayer();
+	const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const vad = useMicVAD({
 		startOnLoad: true,
-		onSpeechEnd: (audio) => {
+		onSpeechStart: () => {
 			player.stop();
+			setIsAIResponding(false);
+			if (submitTimeoutRef.current) {
+				clearTimeout(submitTimeoutRef.current);
+			}
+		},
+		onSpeechEnd: (audio) => {
 			const wav = utils.encodeWAV(audio);
 			const blob = new Blob([wav], { type: "audio/wav" });
-			submit(blob);
+			
+			submitTimeoutRef.current = setTimeout(() => {
+				submit(blob);
+				setIsAIResponding(true);
+			}, 1000); // 1 second delay
+
 			const isFirefox = navigator.userAgent.includes("Firefox");
 			if (isFirefox) vad.pause();
 		},
 		workletURL: "/vad.worklet.bundle.min.js",
 		modelURL: "/silero_vad.onnx",
 		positiveSpeechThreshold: 0.6,
+		negativeSpeechThreshold: 0.6,
 		minSpeechFrames: 4,
+		preSpeechPadFrames: 1,
+		redemptionFrames: 5,
 		ortConfig(ort) {
 			const isSafari = /^((?!chrome|android).)*safari/i.test(
 				navigator.userAgent
@@ -138,59 +153,60 @@ export default function Home() {
 				<div className="relative aspect-square w-96 max-w-full mb-8">
 					<div
 						className={clsx(
-							"absolute inset-0 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 transition-all duration-1000 ease-in-out blur-md",
+							"absolute inset-0 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 transition-all duration-2000 ease-in-out",
 							{
-								"opacity-0 scale-0": vad.loading || vad.errored,
-								"opacity-50 scale-90 animate-pulse-slow": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-								"opacity-100 scale-110 animate-core-pulse": vad.userSpeaking,
-								"opacity-80 scale-105 animate-core-wave": isAIResponding,
+								"opacity-0 scale-95 blur-xl animate-fade-in-blur": vad.loading,
+								"opacity-0 scale-95": vad.errored,
+								"opacity-50 scale-100 animate-pulse-slow blur-md": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
+								"opacity-80 scale-105 animate-core-pulse blur-sm": vad.userSpeaking,
+								"opacity-70 scale-103 animate-core-wave blur-md": isAIResponding,
 							}
 						)}
 					/>
 
 					<div
 						className={clsx(
-							"absolute inset-4 rounded-full border-4 border-cyan-300 transition-all duration-1000 ease-in-out blur-sm",
+							"absolute inset-4 rounded-full border-4 border-cyan-300 transition-all duration-2000 ease-in-out blur-sm",
 							{
-								"opacity-0 scale-0": vad.loading || vad.errored,
-								"opacity-30 scale-95 animate-spin-slow": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-								"opacity-70 scale-105 animate-spin-reverse": vad.userSpeaking,
-								"opacity-50 scale-100 animate-ping": isAIResponding,
+								"opacity-0 scale-95": vad.loading || vad.errored,
+								"opacity-30 scale-100 animate-spin-slow": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
+								"opacity-60 scale-103 animate-spin-reverse": vad.userSpeaking,
+								"opacity-50 scale-102 animate-ping": isAIResponding,
 							}
 						)}
 					/>
 
 					<div
 						className={clsx(
-							"absolute inset-8 rounded-full border-2 border-green-300 transition-all duration-1000 ease-in-out blur-sm",
+							"absolute inset-8 rounded-full border-2 border-green-300 transition-all duration-2000 ease-in-out blur-sm",
 							{
-								"opacity-0 scale-0": vad.loading || vad.errored,
+								"opacity-0 scale-95": vad.loading || vad.errored,
 								"opacity-20 scale-100 animate-spin-reverse-slow": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-								"opacity-60 scale-110 animate-spin": vad.userSpeaking,
-								"opacity-40 scale-105 animate-spin-slow": isAIResponding,
+								"opacity-50 scale-103 animate-spin": vad.userSpeaking,
+								"opacity-40 scale-102 animate-spin-slow": isAIResponding,
 							}
 						)}
 					/>
 
 					<div
 						className={clsx(
-							"absolute -inset-4 rounded-full border border-cyan-200 transition-all duration-1000 ease-in-out blur-sm",
+							"absolute -inset-4 rounded-full border border-cyan-200 transition-all duration-2000 ease-in-out blur-sm",
 							{
-								"opacity-0 scale-0": vad.loading || vad.errored,
-								"opacity-10 scale-105 animate-pulse": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-								"opacity-40 scale-125 animate-ping-slow": vad.userSpeaking,
-								"opacity-30 scale-115 animate-pulse-fast": isAIResponding,
+								"opacity-0 scale-95": vad.loading || vad.errored,
+								"opacity-10 scale-100 animate-pulse": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
+								"opacity-30 scale-105 animate-ping-slow": vad.userSpeaking,
+								"opacity-25 scale-103 animate-pulse-fast": isAIResponding,
 							}
 						)}
 					/>
 
 					<div
 						className={clsx(
-							"absolute inset-0 rounded-full bg-gradient-to-r from-green-300 via-cyan-400 to-green-300 transition-all duration-1000 ease-in-out blur-3xl",
+							"absolute inset-0 rounded-full bg-gradient-to-r from-green-300 via-cyan-400 to-green-300 transition-all duration-2000 ease-in-out blur-3xl",
 							{
 								"opacity-0": vad.loading || vad.errored,
 								"opacity-20": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-								"opacity-60 animate-pulse": vad.userSpeaking,
+								"opacity-50 animate-pulse": vad.userSpeaking,
 								"opacity-40 animate-wave": isAIResponding,
 							}
 						)}
@@ -202,28 +218,31 @@ export default function Home() {
 
 					<div
 						className={clsx(
-							"absolute -inset-8 rounded-full transition-all duration-1000 ease-in-out blur-2xl",
+							"absolute -inset-8 rounded-full transition-all duration-2000 ease-in-out blur-2xl",
 							{
 								"opacity-0": vad.loading || vad.errored,
 								"opacity-30 animate-pulse-slow": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-								"opacity-70 animate-glow": vad.userSpeaking,
+								"opacity-60 animate-glow": vad.userSpeaking,
 								"opacity-50 animate-glow-soft": isAIResponding,
 							}
 						)}
 						style={{
-							background: "radial-gradient(circle, rgba(52, 211, 153, 0.3) 0%, rgba(34, 211, 238, 0.2) 25%, rgba(52, 211, 153, 0.1) 50%, transparent 70%)",
+							background: isAIResponding
+								? "radial-gradient(circle, rgba(52, 211, 153, 0.4) 0%, rgba(34, 211, 238, 0.2) 25%, rgba(52, 211, 153, 0.1) 50%, transparent 70%)"
+								: "radial-gradient(circle, rgba(52, 211, 153, 0.3) 0%, rgba(34, 211, 238, 0.2) 25%, rgba(52, 211, 153, 0.1) 50%, transparent 70%)",
 						}}
 					/>
 
 					<div className="absolute inset-0 flex items-center justify-center">
 						<div
 							className={clsx(
-								"w-2/5 h-2/5 bg-contain bg-center bg-no-repeat transition-all duration-1000 ease-in-out",
+								"w-2/5 h-2/5 bg-contain bg-center bg-no-repeat transition-all duration-2000 ease-in-out",
 								{
-									"opacity-0 scale-0 blur-[11px]": vad.loading || vad.errored,
-									"opacity-30 scale-90 animate-pulse-slow blur-[3px]": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
-									"opacity-70 scale-110 animate-logo-pulse blur-[5px]": vad.userSpeaking,
-									"opacity-50 scale-105 blur-[1px]": isAIResponding,
+									"opacity-0 scale-95 blur-[20px] animate-fade-in-blur": vad.loading,
+									"opacity-0 scale-95 blur-[11px]": vad.errored,
+									"opacity-30 scale-100 animate-pulse-slow blur-[3px]": !vad.loading && !vad.errored && !vad.userSpeaking && !isAIResponding,
+									"opacity-60 scale-105 animate-logo-pulse blur-[5px]": vad.userSpeaking,
+									"opacity-50 scale-103 blur-[1px]": isAIResponding,
 								}
 							)}
 							style={{
