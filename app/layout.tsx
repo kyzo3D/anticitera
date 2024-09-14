@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
 	title: "Anticitera | Aura",
 	description:
-		"A fast, open-source voice assistant powered by Groq, Cartesia, and Vercel.",
+		"Aura, the first Anticitera's MCA assistant for administrative tasks.",
 };
 
 export default function RootLayout({
